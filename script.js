@@ -62,15 +62,27 @@ const game = () => {
     console.log(result)
     round++
   }
+  //Display final total and ask if player wants to play again
   str = `GAME OVER. Final Player Score: ${playerScore}. Computer Score: ${computerScore}. `
   if (playerScore > computerScore) {
     str = (str.concat('Player wins!'))
   } else if (computerScore > playerScore) {
     str = str.concat('Computer Wins :(')
   } else str = str.concat('It\'s a tie!')
-  console.log(str)
-  //resetting variables once game is over to allow for replay
-  round = 1
-  playerScore = 0;
-  computerScore = 0;
+  //if player wants to play again, let them
+  const ask = () => {
+    let playAgain = prompt(str.concat(' Play again?'), "Yes or No").toLowerCase()
+    if (playAgain == "yes") {
+      //resetting variables once game is over to allow for replay
+      round = 1
+      playerScore = 0;
+      computerScore = 0;
+      game()
+    } else if (playAgain == "no") {
+      console.log(str + " Thanks for playing!")
+    } else {
+      ask()
+    }
+  }
+  ask()
 }
