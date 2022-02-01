@@ -3,86 +3,93 @@ let computerSelection = ""
 let playerSelection = ""
 let computerScore = 0
 let playerScore = 0
-let round = 1;
-let result;
+let round = 0;
 
-//function to test playerSelection is valid, when complete will move on to Choose Winner
-const testSelection = playerSelection => {
-  if (playerSelection == "rock" || playerSelection == "paper" || playerSelection == "scissors") {
-    chooseWinner(playerSelection, computerSelection)
-  } else {//catch for invalid choices
-    playerSelection = prompt(`Round ${round}. Please enter a valid choice. Rock, Paper, or Scissors?`);
-    testSelection(playerSelection)
+//add event listener for all buttons to set playerSelection
+const buttons = document.querySelectorAll('button')
+const results = document.querySelector('.results')
+document.getElementById("playerScore").innerText = playerScore;
+document.getElementById("computerScore").innerText = computerScore;
+document.getElementById("round").innerText = round;
+
+buttons.forEach(button => {
+  button.addEventListener('click', () => {
+    playerSelection = button.id;
+    oneRound()
   }
-}
+  )
+})
 
 //function to determine winner and update score
 const chooseWinner = (playerSelection, computerSelection) => {
   //Options where computer wins
-  if (playerSelection == "rock" && computerSelection == "paper" || playerSelection == "paper" && computerSelection == "scissors" || playerSelection == "scissors" && computerSelection == "rock") {
+  if (playerSelection == "Rock" && computerSelection == "Paper" || playerSelection == "Paper" && computerSelection == "Scissors" || playerSelection == "Scissors" && computerSelection == "Rock") {
     computerScore++
-    result = `Round ${round}. Player choice: ${playerSelection} Computer choice: ${computerSelection}. Computer Wins! Player Score: ${playerScore}. Computer Score: ${computerScore}.`
+    results.innerText = `Round ${round}. Player choice: ${playerSelection}. Computer choice: ${computerSelection}. Computer Wins!`
   } //Options where player wins
-  else if (playerSelection == "rock" && computerSelection == "scissors" || playerSelection == "paper" && computerSelection == "rock" || playerSelection == "scissors" && computerSelection == "paper") {
+  else if (playerSelection == "Rock" && computerSelection == "Scissors" || playerSelection == "Paper" && computerSelection == "Rock" || playerSelection == "Scissors" && computerSelection == "Paper") {
     playerScore++
-    result = `Round ${round}. Player choice: ${playerSelection} Computer choice: ${computerSelection}. Player Wins! Player Score: ${playerScore}. Computer Score: ${computerScore}.`
-  } //If tie 
-  else {
-    result = `Round ${round}. Player choice: ${playerSelection} Computer choice: ${computerSelection}. It's a tie! Player Score: ${playerScore}. Computer Score: ${computerScore}.`
-  }
+    results.innerText = `Round ${round}. Player choice: ${playerSelection}. Computer choice: ${computerSelection}. Player Wins!`
+  } else results.innerText = `Round ${round}. Player choice: ${playerSelection}. Computer choice: ${computerSelection}. It's a tie!`
 }
 
-const oneRound = () => {
+
+
+function oneRound() {
+  if (playerScore >= 5 || computerScore >= 5) {
+    return endGame();
+  }
+  round++
   //generate random num 1-3 to choose computerSelection
-  let randomNum = Math.floor(Math.random() * 3) + 1
+  let randomNum = Math.floor(Math.random() * 3) + 1;
   switch (randomNum) {
     case 1:
-      computerSelection = "rock"
+      computerSelection = "Rock";
       break;
     case 2:
-      computerSelection = "paper"
+      computerSelection = "Paper";
       break;
     case 3:
-      computerSelection = "scissors"
+      computerSelection = "Scissors";
       break;
   }
-  //ask user input, set value as all lowercase playerSelection
-  playerSelection = prompt(`Round ${round}. Rock, Paper, or Scissors?`).toLowerCase()
-  //ensure playerSelection is valid and choose a winner
-  testSelection(playerSelection)
+  chooseWinner(playerSelection, computerSelection);
+  document.getElementById("playerScore").innerText = playerScore;
+  document.getElementById("computerScore").innerText = computerScore;
+  document.getElementById("round").innerText = round;
+  if (playerScore == 5 || computerScore == 5) {
+    endGame();
+  }
 }
 
-//create function game()
-const game = () => {
-  //set up loop while round number is less than or equal to 5
-  let roundTotal = parseInt(prompt('How many rounds would you like to play?', 5))
-  console.clear()
-  while (round <= roundTotal) {
-    oneRound()
-    console.log(result)
-    round++
-  }
+function endGame() {
   //Display final total and ask if player wants to play again
-  str = `GAME OVER. Final Player Score: ${playerScore}. Computer Score: ${computerScore}. `
+  str = `GAME OVER IN ${round} ROUNDS. Final Player Score: ${playerScore}. Computer Score: ${computerScore}. `;
   if (playerScore > computerScore) {
-    str = (str.concat('Player wins!'))
+    str = str.concat('Player wins!');
   } else if (computerScore > playerScore) {
-    str = str.concat('Computer Wins :(')
-  } else str = str.concat('It\'s a tie!')
+    str = str.concat('Computer Wins :(');
+  }
+  results.innerText = (str);
   //if player wants to play again, let them
   const ask = () => {
-    let playAgain = prompt(str.concat(' Play again?'), "Yes or No").toLowerCase()
+    let playAgain = prompt(str.concat(' Play again?'), "Yes or No").toLowerCase();
     if (playAgain == "yes") {
       //resetting variables once game is over to allow for replay
-      round = 1
+      round = 0;
       playerScore = 0;
       computerScore = 0;
-      game()
+      document.getElementById("playerScore").innerText = playerScore;
+      document.getElementById("computerScore").innerText = computerScore;
+      document.getElementById("round").innerText = round;
+      results.innerText = ""
     } else if (playAgain == "no") {
-      console.log(str + " Thanks for playing!")
+      const para = document.createElement('p')
+      para.innerText = "Thanks for playing! <3"
+      results.appendChild(para)
     } else {
-      ask()
+      ask();
     }
-  }
-  ask()
+  };
+  ask();
 }
